@@ -16,12 +16,43 @@ module FunWithStrings
 	hash
   end
   def anagram_groups
-	hash = Hash.new
-	anagram_groups = [[]]
-	words = self.split
-	words.each{ |word|
-		anagram_groups
+	anagram = Proc.new {
+		|first, second|
+
+		a = Hash.new
+		b = Hash.new
+		first.each_char{|let|
+			a[let] ||= 0
+			a[let] += 1
+		} unless first.nil?
+		second.each_char{|let|
+			b[let] ||= 0
+			b[let] += 1
+		} unless second.nil?
+		a == b
 	}
+	
+	hash = Hash.new
+	anagram_groupings = [[]]
+	words = self.downcase.split
+
+	words.each{ |word|
+		word.gsub!(/\W+/,'')
+		found = false
+		for i in 0...anagram_groupings.length
+			if anagram.call(anagram_groupings[i][0], word)
+				anagram_groupings[i] << word
+				found = true
+				break
+			end
+		end
+		anagram_groupings << [word] unless found || word == ""
+
+
+	}
+
+	
+	anagram_groupings
   end
 end
 
